@@ -3,8 +3,11 @@ project(AMD)
 include_directories("${suitesparseconfig_SOURCE_DIR}")
 include_directories("${AMD_SOURCE_DIR}/Include")
 
+set(AMD_INCLUDE_DIR ${AMD_SOURCE_DIR}/Include)
 file(GLOB LIBHDRS "Include/*.h")
 file(GLOB LIBSRCS "SourceWrappers/*.c")
 
-declare_suitesparse_library(amd "${LIBSRCS}" "${LIBHDRS}" )
+declare_suitesparse_library(amd "${LIBSRCS}" "${LIBHDRS}" 
+                TARGET_PUBLIC_INTERFACE "${suitesparseconfig_SOURCE_DIR}" "${AMD_INCLUDE_DIR}"
+                )
 

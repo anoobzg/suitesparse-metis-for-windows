@@ -12,4 +12,5 @@ file(GLOB LIBSRCS "${UMFPACK_SOURCE_DIR}/SourceWrappers/*.c")
 declare_suitesparse_library(umfpack "${LIBSRCS}" "${LIBHDRS}"
     TARGET_PRIVATE_LINK ${SuiteSparse_LINKER_LAPACK_BLAS_LIBS}
     TARGET_PUBLIC_LINK amd camd colamd ccolamd cholmod ${SuiteSparse_LINKER_PUBLIC_LIBS}
+    TARGET_PUBLIC_INTERFACE "${UMFPACK_SOURCE_DIR}/Include"
 )

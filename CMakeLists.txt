@@ -7,7 +7,7 @@
 
 # Hunter stuff must be included before project()
 option(HUNTER_ENABLED "Enable Hunter package manager support" OFF)
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(WITH_TBB "Enable using TBB" OFF)
 option(WITH_OPENBLAS "Build with OpenBLAS instead of generic BLAS/LAPACK" OFF)
 option(WITH_MKL "Build with MKL instead of generic BLAS/LAPACK" OFF)
@@ -176,7 +176,7 @@ endmacro()
 macro(declare_suitesparse_library targetName srcsList headersList)
     # # following args are optional
     include(CMakeParseArguments)
-    cmake_parse_arguments(dsl "" "" "TARGET_PRIVATE_LINK;TARGET_PUBLIC_LINK" ${ARGN})
+    cmake_parse_arguments(dsl "" "" "TARGET_PRIVATE_LINK;TARGET_PUBLIC_LINK;TARGET_PUBLIC_INTERFACE" ${ARGN})
 
     if(NOT dsl_TARGET_PRIVATE_LINK)
         set(dsl_TARGET_PRIVATE_LINK "")
@@ -184,6 +184,10 @@ macro(declare_suitesparse_library targetName srcsList headersList)
 
     if(NOT dsl_TARGET_PUBLIC_LINK)
         set(dsl_TARGET_PUBLIC_LINK "")
+    endif()
+
+    if(NOT dsl_TARGET_PUBLIC_INTERFACE)
+        set(dsl_TARGET_PUBLIC_INTERFACE "")
     endif()
 
     if(WITH_CUDA)
@@ -207,6 +211,14 @@ macro(declare_suitesparse_library targetName srcsList headersList)
         ${dsl_TARGET_PUBLIC_LINK} suitesparseconfig # # suitesparseconfig is used for every projects (embedded into cmake build)
         ${dsl_TARGET_PRIVATE_LINK} # # external required libs
     )
+
+    foreach(item ${dsl_TARGET_PUBLIC_INTERFACE})
+        target_include_directories(${targetName}
+                            INTERFACE
+                            $<BUILD_INTERFACE:${item}>
+                            $<INSTALL_INTERFACE:include>
+                            )        
+    endforeach()
 
     if(WITH_TBB)
         target_link_libraries(${targetName} ${dsl_TARGET_PRIVATE_LINK} tbb)
@@ -317,7 +329,7 @@ add_subdirectory(SuiteSparse)
 
 macro(get_SuiteSparse_Version)
     set(_SuiteSparse_VERSION_FILE
-        "${CMAKE_SOURCE_DIR}/SuiteSparse/SuiteSparse_config/SuiteSparse_config.h")
+        "${CMAKE_CURRENT_SOURCE_DIR}/SuiteSparse/SuiteSparse_config/SuiteSparse_config.h")
 
     if(NOT EXISTS ${_SuiteSparse_VERSION_FILE})
         message(FATAL_ERROR

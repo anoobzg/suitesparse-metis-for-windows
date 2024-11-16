@@ -53,6 +53,7 @@ include_directories("${CHOLMOD_SOURCE_DIR}/Include")
 declare_suitesparse_library(cholmod "${CHOLMOD_SOURCES}" "${LIBHDRS}"
     TARGET_PRIVATE_LINK ${SuiteSparse_LINKER_LAPACK_BLAS_LIBS}
     TARGET_PUBLIC_LINK amd camd colamd ccolamd
+    TARGET_PUBLIC_INTERFACE "${CHOLMOD_SOURCE_DIR}/Include"
 )
 
 if(WITH_CUDA)
